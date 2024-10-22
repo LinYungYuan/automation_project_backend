@@ -1,17 +1,23 @@
-# app/api/api_v1/endpoints/auth.py
+# app/api/v1/endpoints/auth.py
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from app.core.security import create_access_token
-from app.services.auth import authenticate_user
-from app.core.db_session import get_db
+from app import schemas, services
+from app.api import deps
 
 router = APIRouter()
 
-@router.post("/login")
-async def login(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(db, form_data.username, form_data.password)
+@router.post("/login", response_model=schemas.Token)
+def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(deps.get_db)):
+    user = services.authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
-    access_token = create_access_token(user.username)
+    access_token = services.create_user_token(user)
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post("/users", response_model=schemas.User)
+def create_user(user: schemas.UserCreate, db: Session = Depends(deps.get_db)):
+    db_user = services.get_user(db, username=user.username)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    return services.create_user(db=db, username=user.username, email=user.email, password=user.password)
