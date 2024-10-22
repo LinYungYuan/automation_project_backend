@@ -1,18 +1,27 @@
-# app/main.py
+from arq import create_pool
+from arq.connections import RedisSettings
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from app.api.api_v1.api import api_router
+
+from app.api import router
+from app.core import redis
 from app.core.config import settings
 
-app = FastAPI(title=settings.PROJECT_NAME)
+async def create_redis_pool():
+    redis.pool = await create_pool(
+        RedisSettings(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
+    )
 
-# Set all CORS enabled origins
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
-app.include_router(api_router, prefix=settings.API_V1_STR)
+async def close_redis_pool():
+    redis.pool.close()
+
+
+def create_application() -> FastAPI:
+    application = FastAPI(title=settings.PROJECT_NAME)
+    application.include_router(router)
+    application.add_event_handler("startup", create_redis_pool)
+    application.add_event_handler("shutdown", close_redis_pool)
+    return application
+
+
+app = create_application()

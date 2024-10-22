@@ -1,23 +1,41 @@
-# app/core/security.py
-from passlib.context import CryptContext
 from datetime import datetime, timedelta
+from typing import Optional
+
 from jose import jwt
+from passlib.context import CryptContext
+from pydantic import EmailStr
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.config import settings
+from app.crud.users import crud_user
+from app.models.users import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def verify_password(plain_password, hashed_password):
+ALGORITHM = "HS256"
+
+
+def create_access_token(user: User) -> str:
+    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    return jwt.encode(
+        {"exp": expire, "user_id": str(user.id)},
+        key=settings.SECRET_KEY.get_secret_value(),
+        algorithm=ALGORITHM,
+    )
+
+
+def is_valid_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-def get_password_hash(password):
+
+def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    return encoded_jwt
+
+async def authenticate(
+    session: AsyncSession, email: EmailStr, password: str
+) -> Optional[User]:
+    user = await crud_user.get(session, email=email)
+    if user is not None and is_valid_password(password, user.hashed_password):
+        return user
+    return None

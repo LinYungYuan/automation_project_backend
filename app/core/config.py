@@ -1,30 +1,39 @@
-# app/core/config.py
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import PostgresDsn, AnyHttpUrl, field_validator
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, Optional
+
+from pydantic import BaseSettings, EmailStr, SecretStr, validator
+
 
 class Settings(BaseSettings):
-    API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "AI Chat API"
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
-    SECRET_KEY: str = "YOUR_SECRET_KEY"
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    
-    POSTGRES_SERVER: str
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
-    SQLALCHEMY_DATABASE_URI: Optional[str] = None
+    PROJECT_NAME: str
 
-    
-    @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
-    @classmethod
-    def assemble_db_connection(cls, v: Optional[str], info: Dict[str, Any]) -> Any:
+    POSTGRES_DB: str
+    POSTGRES_HOST: str
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: SecretStr
+    # TODO(Marcelo): Change type once https://github.com/samuelcolvin/pydantic/pull/2567 is merged.
+    POSTGRES_URI: Optional[str] = None
+
+    @validator("POSTGRES_URI", pre=True)
+    def validate_postgres_conn(cls, v: Optional[str], values: Dict[str, Any]) -> str:
         if isinstance(v, str):
             return v
-        return f"postgresql://{info.data.get('POSTGRES_USER')}:{info.data.get('POSTGRES_PASSWORD')}@{info.data.get('POSTGRES_SERVER')}/{info.data.get('POSTGRES_DB')}"
+        password: SecretStr = values.get("POSTGRES_PASSWORD", SecretStr(""))
+        return "{scheme}://{user}:{password}@{host}/{db}".format(
+            scheme="postgresql+asyncpg",
+            user=values.get("POSTGRES_USER"),
+            password=password.get_secret_value(),
+            host=values.get("POSTGRES_HOST"),
+            db=values.get("POSTGRES_DB"),
+        )
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
+    FIRST_USER_EMAIL: EmailStr
+    FIRST_USER_PASSWORD: SecretStr
+
+    SECRET_KEY: SecretStr
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+
+    REDIS_HOST: str
+    REDIS_PORT: int
+
 
 settings = Settings()
