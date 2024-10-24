@@ -8,7 +8,6 @@ from app.schemas.token import Token
 
 router = APIRouter(tags=["Login"])
 
-
 @router.post("/login/", response_model=Token)
 async def login(
     data: OAuth2PasswordRequestForm = Depends(),
