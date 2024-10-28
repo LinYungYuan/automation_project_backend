@@ -17,7 +17,7 @@ async def create_redis_pool():
 # 異步函數：關閉 Redis 連接池
 async def close_redis_pool():
     # 調用 close 方法關閉連接池
-    redis.pool.close()
+    await redis.pool.close()
 
 # 創建 FastAPI 應用程序的函數
 def create_application() -> FastAPI:
