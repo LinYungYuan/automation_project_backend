@@ -13,6 +13,7 @@ async def login(
     data: OAuth2PasswordRequestForm = Depends(),
     session: AsyncSession = Depends(get_session),
 ):
+    print(data.username)
     user = await authenticate(session, email=data.username, password=data.password)
     if user is None:
         raise HTTPException(status_code=400, detail="Incorrect email or password")

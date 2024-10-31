@@ -2,7 +2,7 @@
 from arq import create_pool
 from arq.connections import RedisSettings
 from fastapi import FastAPI
-
+from fastapi.middleware.cors import CORSMiddleware
 from app.api import router
 from app.core import redis
 from app.core.config import settings
@@ -33,6 +33,13 @@ def create_application() -> FastAPI:
     # 在應用程序關閉時調用 close_redis_pool 函數以關閉 Redis 連接池
     application.add_event_handler("shutdown", close_redis_pool)
     
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],  # Angular開發伺服器的URL
+        allow_credentials=True,  # 允許攜帶憑證
+        allow_methods=["*"],  # 允許所有HTTP方法
+        allow_headers=["*"],  # 允許所有headers
+    )
     # 返回創建的 FastAPI 應用程序實例
     return application
 

@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
+import logging
 
 from app.core.config import settings
 from app.core.database import SessionLocal
@@ -11,13 +12,18 @@ from app.crud.users import crud_user
 from app.models.users import User
 from app.schemas.token import TokenPayload
 
-oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/login")
+#依賴注入
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
+oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/login")
 
 async def get_session():
     async with SessionLocal() as session:
         yield session
-
 
 def get_token_data(token: str = Depends(oauth2)) -> TokenPayload:
     try:
@@ -27,7 +33,6 @@ def get_token_data(token: str = Depends(oauth2)) -> TokenPayload:
     except (jwt.JWTError, ValidationError):
         raise HTTPException(status_code=403, detail="Could not validate credentials")
     return token_data
-
 
 async def get_current_user(
     token: str = Depends(get_token_data),
