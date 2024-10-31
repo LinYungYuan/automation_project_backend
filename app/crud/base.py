@@ -4,9 +4,10 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-ModelType = TypeVar("ModelType")
-CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
-UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
+# 定義泛型類型變數
+ModelType = TypeVar("ModelType")# 資料庫模型類型
+CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)# 創建數據的schema類型
+UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)# 更新數據的schema類型
 
 
 class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
