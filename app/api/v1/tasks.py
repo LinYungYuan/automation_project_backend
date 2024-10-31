@@ -19,7 +19,7 @@ async def process_chat(
     db: AsyncSession = Depends(get_session)
 ) -> ChatBase:
     try:
-        # 打印接收到的請求數據
+        # 等待 API 回應時，可以處理其他任務
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 "http://localhost:8011/process",
@@ -35,6 +35,7 @@ async def process_chat(
             chat = await crud_chat.create(db, res)
             
             return chat
+        
     except httpx.RequestError as e:
         raise HTTPException(
             status_code=503,
