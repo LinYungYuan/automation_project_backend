@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from typing import List
 import httpx
 from fastapi import Depends
+from app.crud.chat import crud_chat
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.chat import (
     ProcessRequest,
@@ -10,11 +10,14 @@ from app.schemas.chat import (
 from app.api.deps import (
     get_session
 )
-from app.crud.chat import crud_chat
+
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
 @router.post("/", status_code=201)
-async def process_chat(request: ProcessRequest,db: AsyncSession = Depends(get_session)) -> ChatBase:
+async def process_chat(
+    request: ProcessRequest,
+    db: AsyncSession = Depends(get_session)
+) -> ChatBase:
     try:
         # 打印接收到的請求數據
         async with httpx.AsyncClient() as client:
@@ -32,7 +35,6 @@ async def process_chat(request: ProcessRequest,db: AsyncSession = Depends(get_se
             chat = await crud_chat.create(db, res)
             
             return chat
-            
     except httpx.RequestError as e:
         raise HTTPException(
             status_code=503,
