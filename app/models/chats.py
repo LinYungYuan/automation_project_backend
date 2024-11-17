@@ -1,12 +1,13 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Time
-import datetime
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from app.models.base import Base
-
+from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 
 class Chat(Base):
-    chatId = Column(Integer, primary_key=True, index=True)
-    userId = Column(Integer, ForeignKey("user.id"), index=True)
-    assistantContent = Column(String)
-    userContent = Column(String)
-    userContentTime = Column(Time(), default=datetime.datetime.now().time)
-    assistantContentTime = Column(Time(), default=datetime.datetime.now().time)
+    chat_id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("user.user_id"), index=True)
+    title = Column(String)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    messages = relationship("Message", back_populates="chatroom")
+    user = relationship("User")
+    

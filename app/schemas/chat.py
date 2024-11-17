@@ -1,33 +1,19 @@
-from pydantic import BaseModel
-from typing import List, Optional
-from app.models.chats import (
-    Chat
-)
-class ProcessRequest(BaseModel):
-    chatId: str
-    userId: str
-    history: List[Chat]
-    userContent: str
+from typing import Optional, List
+from datetime import datetime
+from pydantic import BaseModel, ConfigDict
 
+# 聊天室相關Schema
 class ChatBase(BaseModel):
-    chatId: str
-    userId: str
-    userContent: str
-    assistantContent: str
-    
-# Pydantic schemas
-class ChatCreate(BaseModel):
-    chatId: str
-    userId: str
-    userContent: Optional[str] = None
-    assistantContent: Optional[str] = None
-    
-# Pydantic schemas
-class ChatUpdate(BaseModel):
-    chatId: str
-    userId: str
-    userContent: Optional[str] = None
-    assistantContent: Optional[str] = None
-    
-class ChatDelete(BaseModel):
-    chatId : str
+    title: str
+
+class ChatRoomCreate(ChatBase):
+    pass
+
+class ChatRoomUpdate(ChatBase):
+    title: Optional[str] = None
+
+class ChatRoomOut(ChatBase):
+    id: int
+    user_id: int
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
