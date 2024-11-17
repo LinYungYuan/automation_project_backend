@@ -16,9 +16,8 @@ class UserCreate(UserBase):
 
 
 class UserOut(UserBase):
-    id: int
+    user_id: int
     model_config = ConfigDict(from_attributes=True)
-
 
 class UserInDB(UserBase):
     hashed_password: str
