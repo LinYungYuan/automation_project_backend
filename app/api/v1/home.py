@@ -1,4 +1,4 @@
-from multiprocessing import get_logger
+
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from typing import Optional
@@ -6,6 +6,7 @@ from app.api.deps import get_token_data
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.core.database import SessionLocal
+from app.core.logger import get_logger
 from app.core.security import get_password_hash
 from app.models.users import User
 

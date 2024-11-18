@@ -6,13 +6,13 @@ from pydantic import BaseModel, ConfigDict
 class ChatBase(BaseModel):
     title: str
 
-class ChatRoomCreate(ChatBase):
+class ChatCreate(ChatBase):
     pass
 
-class ChatRoomUpdate(ChatBase):
+class ChatUpdate(ChatBase):
     title: Optional[str] = None
 
-class ChatRoomOut(ChatBase):
+class ChatOut(ChatBase):
     id: int
     user_id: int
     created_at: datetime

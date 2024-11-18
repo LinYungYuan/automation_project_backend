@@ -1,13 +1,11 @@
-from multiprocessing import get_logger
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
-import logging
-
 from app.core.config import settings
 from app.core.database import SessionLocal
+from app.core.logger import get_logger
 from app.core.security import ALGORITHM
 from app.crud.users import crud_user
 from app.models.users import User

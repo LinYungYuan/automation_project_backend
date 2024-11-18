@@ -1,2 +1,2 @@
-from app.models.chats import Item
+from app.models.chat import Chat
 from app.models.users import User

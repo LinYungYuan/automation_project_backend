@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import List
-from pydantic import BaseModel, ConfigDict
-from app.schemas.chat import ChatRoomOut
+from pydantic import BaseModel
 
 # BaseModel使用來資料驗證跟結構定義
 # 訊息相關Schema

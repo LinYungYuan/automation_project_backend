@@ -4,11 +4,11 @@ from fastapi import Depends
 from app.crud.chat import crud_chat
 from app.crud.message import crud_message
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.chats import Chat
+from app.models.chat import Chat
 from app.models.message import Message
 from app.models.users import User
 from app.schemas.chat import (
-    ChatRoomCreate,
+    ChatCreate,
     ChatBase
 )
 from app.api.deps import (
@@ -17,11 +17,11 @@ from app.api.deps import (
 )
 from app.schemas.message import MessageBase, MessageRequest
 
-router = APIRouter(prefix="/rooms", tags=["Tasks"])
+router = APIRouter(prefix="/chats", tags=["Tasks"])
 #建立聊天室
-@router.post("/", response_model=ChatRoomCreate, summary="新增聊天室")
+@router.post("/", response_model=ChatCreate, summary="新增聊天室")
 async def create_chat_room(
-    chat: ChatRoomCreate,
+    chat: ChatCreate,
     db: AsyncSession = Depends(get_session),
     current_user = Depends(get_current_user)
 ):
@@ -34,7 +34,7 @@ async def create_chat_room(
     return chat_room
 
 # 取得聊天室內容
-@router.get("/chat/{chat_id}", status_code=201,summary="取得聊天室歷史內容")
+@router.get("/{chat_id}", status_code=201,summary="取得聊天室歷史內容")
 async def process_chat(
     chat_id: str,
     current_user = Depends(get_current_user), 
@@ -55,7 +55,7 @@ async def process_chat(
 
 
 # 發送訊息
-@router.post("/chat/{chat_id}message", status_code=201,description="與ai串接")
+@router.post("/{chat_id}/message", status_code=201,description="與ai串接")
 async def process_chat(
     chat_id: str,
     messageRequest: MessageRequest,

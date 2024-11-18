@@ -1,5 +1,4 @@
 
-from multiprocessing import get_logger
 from arq import create_pool
 from arq.connections import RedisSettings
 from fastapi import FastAPI
@@ -7,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import router
 from app.core import redis
 from app.core.config import settings
-from app.core.logger import log_middleware
+from app.core.logger import get_logger, log_middleware
 
 
 logger = get_logger(__name__)
