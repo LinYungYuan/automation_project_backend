@@ -22,7 +22,6 @@ class MessageOut(MessageBase):
     created_at: datetime
     update_at: datetime
     
-    
 # 訊息相關Schema
 class MessageRequest(BaseModel):
     chat_id: str

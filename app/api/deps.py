@@ -1,3 +1,4 @@
+from multiprocessing import get_logger
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
@@ -13,12 +14,7 @@ from app.models.users import User
 from app.schemas.token import TokenPayload
 
 #依賴注入
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
+logger = get_logger(__name__)
 oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/login")
 
 async def get_session():

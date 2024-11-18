@@ -8,6 +8,6 @@ class Chat(Base):
     user_id = Column(Integer, ForeignKey("user.user_id"), index=True)
     title = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    messages = relationship("Message", back_populates="chatroom")
+    messages = relationship("Message", back_populates="chat")
     user = relationship("User")
     

@@ -1,6 +1,5 @@
 from typing import Optional
-
-from pydantic import BaseModel, EmailStr,ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 
 class UserBase(BaseModel):
@@ -9,11 +8,9 @@ class UserBase(BaseModel):
     is_superuser: bool = False
     full_name: Optional[str] = None
 
-
 class UserCreate(UserBase):
     email: EmailStr
     password: str
-
 
 class UserOut(UserBase):
     user_id: int
@@ -22,10 +19,8 @@ class UserOut(UserBase):
 class UserInDB(UserBase):
     hashed_password: str
 
-
 class UserUpdate(UserBase):
     password: Optional[str] = None
-
 
 class UserUpdateDB(UserBase):
     hashed_password: str

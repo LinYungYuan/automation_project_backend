@@ -1,6 +1,6 @@
+from multiprocessing import get_logger
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
-import logging
 from typing import Optional
 from app.api.deps import get_token_data
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,10 +9,7 @@ from app.core.database import SessionLocal
 from app.core.security import get_password_hash
 from app.models.users import User
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-
+logger = get_logger(__name__)
 router = APIRouter(prefix="/home", tags=["Home"])
 
 @router.get("/", dependencies=[Depends(get_token_data)])

@@ -1,4 +1,5 @@
 
+from multiprocessing import get_logger
 from arq import create_pool
 from arq.connections import RedisSettings
 from fastapi import FastAPI
@@ -6,6 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import router
 from app.core import redis
 from app.core.config import settings
+from app.core.logger import log_middleware
+
+
+logger = get_logger(__name__)
 
 # 異步函數：創建 Redis 連接池
 async def create_redis_pool():
@@ -32,6 +37,8 @@ def create_application() -> FastAPI:
     
     # 在應用程序關閉時調用 close_redis_pool 函數以關閉 Redis 連接池
     application.add_event_handler("shutdown", close_redis_pool)
+    # 添加中間件以記錄請求和響應信息
+    application.middleware("http")(log_middleware)
     
     application.add_middleware(
         CORSMiddleware,
@@ -39,6 +46,7 @@ def create_application() -> FastAPI:
         allow_credentials=True,  # 允許攜帶憑證
         allow_methods=["*"],  # 允許所有HTTP方法
         allow_headers=["*"],  # 允許所有headers
+        
     )
     # 返回創建的 FastAPI 應用程序實例
     return application
