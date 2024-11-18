@@ -39,7 +39,7 @@ def create_application() -> FastAPI:
     application.add_event_handler("shutdown", close_redis_pool)
     # 添加中間件以記錄請求和響應信息
     application.middleware("http")(log_middleware)
-    
+    # 添加 CORS 中間件以允許跨域請求
     application.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],  # Angular開發伺服器的URL
