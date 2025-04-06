@@ -1,7 +1,7 @@
 # automation_project_backend
 第一次使用python fastapi 和 sqlalchemy 當作練習來開發後端服務 \
 db使用postgresql，搭配BaseModel來定義資料的檢核及序列化 \
-接下來嘗試串接redis來優化儲存user session \
+接下來嘗試串接redis來優化儲存user session 
 ### 資料夾結構
 models資料夾定義資料表的欄位 \
 crud資料夾定義資料表的增刪改查 \
